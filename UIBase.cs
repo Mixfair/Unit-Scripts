@@ -39,13 +39,13 @@ namespace Oxide.Plugins
             
             UIMenu menu = new UIMenu(player);
   
-            var peace = new CUIPeace{ 
-                panelName = "Menu",
-                aMax = ".7 .6",
-                aMin = ".1 .4",
-                horizontal = ".4 .4",
-                vertical = ".4 .4"
-            };
+            //var peace = new CUIPeace{ 
+            //    panelName = "Menu",
+            //    aMax = ".7 .6",
+            //    aMin = ".1 .4",
+            //    horizontal = ".4 .4",
+            //    vertical = ".4 .4"
+            //};
 
         }   
 
@@ -53,11 +53,18 @@ namespace Oxide.Plugins
             
             public string panelName;
             public string color;
-            public double aMaxh;
-            public double aMinh;
-            public double aMaxv;
-            public double aMinv;
+            private double aMaxh;
+            private double aMinh;
+            private double aMaxv;
+            private double aMinv;
+
+            private double parentaMaxh;
+            private double parentaMinh;
+            private double parentaMaxv;
+            private double parentaMinv;
             
+            public string ipath;
+
             public bool cursor = false;
             
             public string command;
@@ -72,7 +79,7 @@ namespace Oxide.Plugins
                     Double.TryParse(coord[0], out x1);
                     Double.TryParse(coord[1], out x2);
 
-                    ToGeneral( x1, x2, aMinh, aMaxh, out outx1, out outx2);
+                    ToGeneral( x1, x2, parentaMinh, parentaMaxh, out outx1, out outx2);
 
                     aMinh = outx1;
                     aMaxh = outx2;
@@ -93,9 +100,9 @@ namespace Oxide.Plugins
                     string[] coord = value.Split(' ');
                     Double.TryParse(coord[0], out y1);
                     Double.TryParse(coord[1], out y2);
-
-                    ToGeneral( y1, y2, aMinv, aMaxv, out outy1, out outy2);
-
+                    
+                    ToGeneral( y1, y2, parentaMinv, parentaMaxv, out outy1, out outy2);
+                    
                     aMinv = outy1;
                     aMaxv = outy2;
                 } 
@@ -117,8 +124,8 @@ namespace Oxide.Plugins
                     Double.TryParse(coord[0], out y1);
                     Double.TryParse(coord[1], out y2);
 
-                    aMaxh = y1;
-                    aMaxv = y2;
+                    parentaMaxh = aMaxh = y1;
+                    parentaMaxv = aMaxv = y2;
                 } 
                 get 
                 {
@@ -137,12 +144,12 @@ namespace Oxide.Plugins
                     Double.TryParse(coord[0], out y1);
                     Double.TryParse(coord[1], out y2);
 
-                    aMinh = y1;
-                    aMinv = y2;
+                    parentaMinh = aMinh = y1;
+                    parentaMinv = aMinv = y2;
+
                 } 
                 get 
                 { 
-                    
                     string res = aMinh.ToString("G", CultureInfo.InvariantCulture) + " " + aMinv.ToString("G", CultureInfo.InvariantCulture);
 
                     return res;
@@ -153,9 +160,10 @@ namespace Oxide.Plugins
                 string res;
                 double temp1, temp2, width;
                 
-                width = 1 - (y2+y1);
+                
+                width = (y2-y1);
                 temp1 = y1 + (x1*width);
-                temp2 = y2 - (x2*width);
+                temp2 = y1 + (x2*width);
 
                 outx1 = temp1;
                 outx2 = temp2;
@@ -237,28 +245,28 @@ namespace Oxide.Plugins
                 panel);
             }
 
-            static public void LoadImage(ref CuiElementContainer container, string panel, string img, string aMin, string aMax)
+            static public void LoadImage(CUIPeace panel, ref CuiElementContainer container)
             {
-                if (img.StartsWith("http") || img.StartsWith("www"))
+                if (panel.ipath.StartsWith("http") || panel.ipath.StartsWith("www"))
                 {
                     container.Add(new CuiElement
                     {
-                        Parent = panel,
+                        Parent = panel.panelName,
                         Components =
                     {
-                        new CuiRawImageComponent {Url = img},
-                        new CuiRectTransformComponent {AnchorMin = aMin, AnchorMax = aMax }
+                        new CuiRawImageComponent {Url = panel.ipath},
+                        new CuiRectTransformComponent {AnchorMin = panel.aMin, AnchorMax = panel.aMax }
                     }
                     });
                 }
                 else
                     container.Add(new CuiElement
                     {
-                        Parent = panel,
+                        Parent = panel.panelName,
                         Components =
                     {
-                        new CuiRawImageComponent {Png = img },
-                        new CuiRectTransformComponent {AnchorMin = aMin, AnchorMax = aMax }
+                        new CuiRawImageComponent {Png = panel.ipath },
+                        new CuiRectTransformComponent {AnchorMin = panel.aMin, AnchorMax = panel.aMax }
                     }
                     });
             }
@@ -342,19 +350,31 @@ namespace Oxide.Plugins
                 var panel = new CUIPeace{ 
                     panelName = ui_name,
                     color = UIColors["black"],
-                    aMax = ".7 .7",
-                    aMin = ".1 .1",
-                    horizontal = ".1 .7",
-                    vertical = ".1 .7"
+                    aMax = aMaxInfo,
+                    aMin = aMinInfo,
+                    horizontal = "0 1",
+                    vertical = ".93 1"
                 };  
 
-                Debug.Log(panel.aMax);
-                Debug.Log(panel.aMin);
+                CUIBuild.CreatePanel(panel, ref maincont);
+
+                panel.horizontal = "0 1";
+                panel.vertical = "0 .07";
 
                 CUIBuild.CreatePanel(panel, ref maincont);
-                //CUIBuild.CreatePanel(ref maincont, ui_name,  UIColors["black"], ".151 .365", ".36 .41");
-                //CUIBuild.CreatePanel(ref maincont, ui_name,  UIColors["orange"], ".151 .41", ".36 .5");
-                //CUIBuild.LoadImage(ref maincont, ui_name, "http://www.rigormortis.be/wp-content/uploads/rust-icon-512.png", ".194 .53", ".33 .78");
+
+                panel.horizontal = "0 1";
+                panel.vertical = ".07 .3";
+                panel.color = UIColors["orange"];
+
+                CUIBuild.CreatePanel(panel, ref maincont);
+
+                panel.horizontal = ".2 .8";
+                panel.vertical = ".4 .8";
+                panel.color = UIColors["orange"];
+                panel.ipath = "http://www.rigormortis.be/wp-content/uploads/rust-icon-512.png";
+
+                CUIBuild.LoadImage(panel, ref maincont);
                 //CUIBuild.CreateLabel(ref maincont, ui_name, UIColors["white_pink"], target.ToString(), 18,  ".153 .47", ".36 .5");
 
 

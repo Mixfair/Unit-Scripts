@@ -111,7 +111,7 @@ namespace Oxide.Plugins
             {
                 InvokeHandler.CancelInvoke(this, UpdateMarker);
                 InvokeHandler.CancelInvoke(this, UpdateMap);
-                DestroyUI();
+                DestroyUI(); 
             }
             public void InitializeComponent()
             {

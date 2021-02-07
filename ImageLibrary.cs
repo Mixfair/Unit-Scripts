@@ -27,7 +27,7 @@ namespace Oxide.Plugins
         private DynamicConfigFile urls;
         private DynamicConfigFile skininfo;
 
-        private static ImageLibrary il;
+        private static ImageLibrary il;  
         private ImageAssets assets;
 
         private Queue<LoadOrder> loadOrders = new Queue<LoadOrder>();

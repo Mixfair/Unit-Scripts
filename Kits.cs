@@ -1107,7 +1107,7 @@ namespace Oxide.Plugins
         {
             if (shortname.Contains("http")) return shortname;
             if (skin == 99) skin = (ulong)ResourceId;
-            return GetImage(shortname, skin, true);
+            return GetImage(shortname, skin, true); 
         }
 
         public string GetImage(string shortname, ulong skin = 0, bool returnUrl = false) => (string)ImageLibrary.Call("GetImage", shortname.ToLower(), skin, returnUrl);
@@ -1294,6 +1294,7 @@ namespace Oxide.Plugins
             }
             //UI.CreatePanel(ref element, PanelBackground, "0.1 0.1 0.1 0", "0 0", "1 1");
             CuiHelper.AddUi(player, element);
+            Debug.Log(element);
             //ConsoleNetwork.SendClientCommand(player.net.connection, "gc.unload");
             //player.Command("gc.unload"); 
             //player.Command("gc.collect");
@@ -1330,7 +1331,7 @@ namespace Oxide.Plugins
             GUIKit kitpanel;
             if (!GUIKits.TryGetValue(guiId, out kitpanel)) return;
             BackgroundPanel(player);
-            //RefreshKitPanel(player, guiId);
+            RefreshKitPanel(player, guiId);
         }
 
         void RefreshKitPanel(BasePlayer player, ulong guiId, int page = 0)
